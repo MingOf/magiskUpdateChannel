@@ -478,6 +478,8 @@
 
         .code {
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 14px;
+            white-space: break-spaces;
         }
 
         .serif {
@@ -753,7 +755,7 @@
         <h1 id="25171c5a-6243-442b-a86a-c12373b11d1e" class="">Magisk</h1>
         <p id="c6531b6f-d6cf-4a68-ad55-50f1bdb7da97" class="">Magisk 是一套开放源代码的 Android 自定义工具套组，内置了 Magisk
             Manager、Root、启动脚本、SElinux 补丁和启动时认证 /dm-verity/ 强制加密移除等功能。</p>
-        <p id="12ae18b3-a914-4bef-b5de-5e4fb0638812" class="">本站提供 Magisk Beta 自定义通道</p>
+        <p id="12ae18b3-a914-4bef-b5de-5e4fb0638812" class="">本站提供 Magisk Beta 自定义更新通道</p>
         <style>
             @import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css');
         </style>
@@ -766,23 +768,23 @@
         <style>
             @import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css');
         </style>
-        <pre id="c372bcec-3ec7-499e-acf8-b3b7fa29006f" class="code"><code><span class="token function">git</span> clone <span class="token punctuation">...</span>
-<span class="token function">tar</span> xvf <span class="token punctuation">...</span>
-<span class="token builtin class-name">cd</span> <span class="token punctuation">...</span></code></pre>
-        <p id="8b1ab048-57a0-4d29-a883-db63b0446742" class="">2.下载 go mod</p>
+        <pre id="c372bcec-3ec7-499e-acf8-b3b7fa29006f" class="code"><code><span class="token function">git</span> clone <span class="token punctuation">https://github.com/MingOf/magiskUpdateChannel.git</span>
+<span class="token builtin class-name">cd</span> <span class="token punctuation">magiskUpdateChannel</span></code></pre>
+        <p id="8b1ab048-57a0-4d29-a883-db63b0446742" class="">2.给执行权限</p>
         <style>
             @import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css');
         </style>
         <pre id="f375e9a6-ab41-4704-a3c0-4d9776fee7e1"
-             class="code"><code><span class="token keyword">go</span> mod tidy</code></pre>
+             class="code"><code><span class="token keyword">chmod</span> a+x magiskChannel</code></pre>
         <p id="e63915f1-220f-4220-8869-88e520d558b4" class="">3.启动</p>
         <style>
             @import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css');
         </style>
         <pre id="4ebef3ff-d1b2-4f20-8621-2128b4dda970"
-             class="code"><code>./xxx -d 你的域名或者主机地址 -s <span class="token operator">></span>/tmp/magisk_channel.log <span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">&amp;</span></code></pre>
+             class="code"><code>./magiskChannel -d=你的域名或者主机地址 -p=你的端口 --listenAddress=监听地址 --listenPort=监听端口<span class="token operator">></span>/tmp/magisk_channel.log <span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">&amp;</span></code></pre>
         <p id="debded2f-52bd-4176-bc21-53b5a545ff20" class="">
         </p>
+        <p>详见: <a href="https://github.com/MingOf/magiskUpdateChannel" target="_blank">https://github.com/MingOf/magiskUpdateChannel</a></p>
     </div>
 </article>
 <textarea id="text" style="opacity: 0; z-index: -1; position: fixed; top:0;left:0;width:0;height:0;"></textarea>

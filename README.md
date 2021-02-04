@@ -16,9 +16,12 @@ chmod a+x magiskChannel
 
 2.启动
 ```bash
-./magiskChannel [-d=域名或者主机IP] [-p=端口]
+./magiskChannel [-d=域名或者主机IP] [-p=端口] [--listenAddress=0.0.0.0] [--listenPort=监听端口]
 ```
-域名或者主机 IP 会以及端口会传递给 index.tmpl 模板
+域名或者主机 IP 决定生成的配置的访问域名和端口
+
+其中监听端口和监听地址是服务监听的地址和端口，默认监听 127.0.0.1:8080。
+监听端口默认和配置文件访问端口[-p]相同，也可以分开指定，以便使用 nginx 进行端口转发 
 
 指定域名后确保域名已经解析到自己的主机
 
