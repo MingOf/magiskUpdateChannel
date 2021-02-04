@@ -43,9 +43,9 @@ type Magisk struct {
 
 func main() {
 	domain := flag.String("d", getExternalIP(), "域名或IP")
-	port := flag.String("p", "8080", "端口")
+	port := flag.String("p", "80", "端口")
 	listenPort := flag.String("listenPort", *port, "监听端口")
-	listenAddress := flag.String("listenAddress", "127.0.0.1", "监听地址")
+	listenAddress := flag.String("listenAddress", "0.0.0.0", "监听地址")
 	debug := flag.Bool("debug", false, "详细日志")
 	flag.Parse()
 
@@ -60,6 +60,9 @@ func main() {
 	fmt.Println("已指定端口:", *port)
 
 	realDomain := *domain + ":" + *port
+	if *port == "80" {
+		realDomain = *domain
+	}
 	realListen := *listenAddress + ":" + *listenPort
 	go cron(getConfig, realDomain)
 
