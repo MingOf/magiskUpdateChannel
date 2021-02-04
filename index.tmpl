@@ -732,6 +732,13 @@
             font-size: 20px;
             position: relative;
         }
+        pre.host>code {
+            transition: all 0.3s;
+            display: block;
+        }
+        pre.host:hover>code {
+            transform: scale(1.2);
+        }
         pre.host:hover::after{
             content:"点击复制";
             display: block;

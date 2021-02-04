@@ -38,6 +38,22 @@ http://example.com:80/
 
 --listenPort: 启动 http 服务的监听端口，默认 80
 
+-s: 强制生成 https 路径，这个参数并不会关注是否有证书，需要使用 nginx 配置证书
+
+如：
+```bash
+./magiskChannel -d example.com -p 80 -s
+
+=>
+
+https://exmaple.com:80/beta.json
+
+https://example.com:80/
+
+```
+
+
+
 通常情况下不用特别指定 listenAddress 和 listenPort
 
 如果使用 nginx 可以将 listenAddress 改为 127.0.0.1，listenPort 改为其他端口

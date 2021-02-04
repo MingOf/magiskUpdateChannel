@@ -46,6 +46,7 @@ func main() {
 	port := flag.String("p", "80", "端口")
 	listenPort := flag.String("listenPort", "80", "监听端口")
 	listenAddress := flag.String("listenAddress", "0.0.0.0", "监听地址")
+	isSsl := flag.Bool("s", false, "使用ssl")
 	debug := flag.Bool("debug", false, "详细日志")
 	flag.Parse()
 
@@ -58,16 +59,26 @@ func main() {
 	fmt.Println("已指定域名:", *domain)
 	fmt.Println("已指定端口:", *port)
 
-	realDomain := *domain + ":" + *port
-	if *port == "80" {
-		realDomain = *domain
+	var host string
+
+	if *isSsl {
+		host = "https://" + *domain + ":" + *port
+		if *port == "80" {
+			host = "https://" + *domain
+		}
+	} else {
+		host = "http://" + *domain + ":" + *port
+		if *port == "80" {
+			host = "http://" + *domain
+		}
 	}
-	fmt.Println(*port)
+	fmt.Println("生成自定义更新通道访问路径:", host+"/beta.json")
+
 	realListen := *listenAddress + ":" + *listenPort
 	fmt.Println("已监听:", realListen)
 
 	//1. 获取 beta.json 配置
-	go cron(getConfig, realDomain)
+	go cron(getConfig, host)
 
 	//4. 启动服务器
 	r := gin.Default()
@@ -116,7 +127,7 @@ func main() {
 	r.LoadHTMLFiles("./index.tmpl")
 	r.GET("/", func(context *gin.Context) {
 		context.HTML(200, "index.tmpl", gin.H{
-			"host": "http://" + realDomain + "/beta.json",
+			"host": host + "/beta.json",
 		})
 	})
 	if err := r.Run(realListen); err != nil {
@@ -150,7 +161,7 @@ func getAndSaveMagisk(ctx context.Context, link string, path string) {
 		fmt.Println("下载", path, "成功")
 	}
 }
-func getConfig(ctx context.Context, domain string) {
+func getConfig(ctx context.Context, host string) {
 	select {
 	case <-ctx.Done():
 		fmt.Println("get config timeout")
@@ -172,8 +183,8 @@ func getConfig(ctx context.Context, domain string) {
 		err = json.Unmarshal(data, &copyCfg)
 
 		//2. 复制配置的副本，修改副本，替换 link 为自己的 link. 并保存到本地
-		copyCfg.App.Link = "http://" + domain + "/magisk.apk"
-		copyCfg.Magisk.Link = "http://" + domain + "/magisk.zip"
+		copyCfg.App.Link = host + "/magisk.apk"
+		copyCfg.Magisk.Link = host + "/magisk.zip"
 
 		fmt.Println("获取远程配置成功")
 
@@ -210,10 +221,10 @@ func getExternalIP() string {
 	return string(ip)
 }
 
-func cron(fn func(ctx context.Context, domain string), domain string) {
+func cron(fn func(ctx context.Context, host string), host string) {
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
-		go fn(ctx, domain)
+		go fn(ctx, host)
 		time.Sleep(24 * time.Hour)
 		cancel()
 	}
