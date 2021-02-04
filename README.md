@@ -20,6 +20,8 @@ chmod a+x magiskChannel
 ```
 域名或者主机 IP 会以及端口会传递给 index.tmpl 模板
 
+指定域名后确保域名已经解析到自己的主机
+
 启动后会定时拉取 magisk.apk 和 magisk.zip 到本地，保证最新版本
 
 3.访问
