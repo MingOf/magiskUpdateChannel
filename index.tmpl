@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Magisk 自定义更新通道</title>
+    <style>
+        /* webkit printing magic: print all background colors */
+        html {
+            -webkit-print-color-adjust: exact;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        @media only screen {
+            body {
+                margin: 2em auto;
+                max-width: 900px;
+                color: rgb(55, 53, 47);
+            }
+        }
+
+        body {
+            line-height: 1.5;
+            /* white-space: pre-wrap; */
+        }
+
+        a,
+        a.visited {
+            color: inherit;
+            text-decoration: underline;
+        }
+
+        .pdf-relative-link-path {
+            font-size: 80%;
+            color: #444;
+        }
+
+        h1,
+        h2,
+        h3 {
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 0.75em;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            margin-top: 1.875rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin-top: 1.25rem;
+        }
+
+        .source {
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 1.5em;
+            word-break: break-all;
+        }
+
+        .callout {
+            border-radius: 3px;
+            padding: 1rem;
+        }
+
+        figure {
+            margin: 1.25em 0;
+            page-break-inside: avoid;
+        }
+
+        figcaption {
+            opacity: 0.5;
+            font-size: 85%;
+            margin-top: 0.5em;
+        }
+
+        mark {
+            background-color: transparent;
+        }
+
+        .indented {
+            padding-left: 1.5em;
+        }
+
+        hr {
+            background: transparent;
+            display: block;
+            width: 100%;
+            height: 1px;
+            visibility: visible;
+            border: none;
+            border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        @media only print {
+            img {
+                max-height: 100vh;
+                object-fit: contain;
+            }
+        }
+
+        @page {
+            margin: 1in;
+        }
+
+        .collection-content {
+            font-size: 0.875rem;
+        }
+
+        .column-list {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .column {
+            padding: 0 1em;
+        }
+
+        .column:first-child {
+            padding-left: 0;
+        }
+
+        .column:last-child {
+            padding-right: 0;
+        }
+
+        .table_of_contents-item {
+            display: block;
+            font-size: 0.875rem;
+            line-height: 1.3;
+            padding: 0.125rem;
+        }
+
+        .table_of_contents-indent-1 {
+            margin-left: 1.5rem;
+        }
+
+        .table_of_contents-indent-2 {
+            margin-left: 3rem;
+        }
+
+        .table_of_contents-indent-3 {
+            margin-left: 4.5rem;
+        }
+
+        .table_of_contents-link {
+            text-decoration: none;
+            opacity: 0.7;
+            border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid rgba(55, 53, 47, 0.09);
+            border-collapse: collapse;
+        }
+
+        table {
+            border-left: none;
+            border-right: none;
+        }
+
+        th,
+        td {
+            font-weight: normal;
+            padding: 0.25em 0.5em;
+            line-height: 1.5;
+            min-height: 1.5em;
+            text-align: left;
+        }
+
+        th {
+            color: rgba(55, 53, 47, 0.6);
+        }
+
+        ol,
+        ul {
+            margin: 0;
+            margin-block-start: 0.6em;
+            margin-block-end: 0.6em;
+        }
+
+        li>ol:first-child,
+        li>ul:first-child {
+            margin-block-start: 0.6em;
+        }
+
+        ul>li {
+            list-style: disc;
+        }
+
+        ul.to-do-list {
+            text-indent: -1.7em;
+        }
+
+        ul.to-do-list>li {
+            list-style: none;
+        }
+
+        .to-do-children-checked {
+            text-decoration: line-through;
+            opacity: 0.375;
+        }
+
+        ul.toggle>li {
+            list-style: none;
+        }
+
+        ul {
+            padding-inline-start: 1.7em;
+        }
+
+        ul>li {
+            padding-left: 0.1em;
+        }
+
+        ol {
+            padding-inline-start: 1.6em;
+        }
+
+        ol>li {
+            padding-left: 0.2em;
+        }
+
+        .mono ol {
+            padding-inline-start: 2em;
+        }
+
+        .mono ol>li {
+            text-indent: -0.4em;
+        }
+
+        .toggle {
+            padding-inline-start: 0em;
+            list-style-type: none;
+        }
+
+        /* Indent toggle children */
+        .toggle>li>details {
+            padding-left: 1.7em;
+        }
+
+        .toggle>li>details>summary {
+            margin-left: -1.1em;
+        }
+
+        .selected-value {
+            display: inline-block;
+            padding: 0 0.5em;
+            background: rgba(206, 205, 202, 0.5);
+            border-radius: 3px;
+            margin-right: 0.5em;
+            margin-top: 0.3em;
+            margin-bottom: 0.3em;
+            white-space: nowrap;
+        }
+
+        .collection-title {
+            display: inline-block;
+            margin-right: 1em;
+        }
+
+        time {
+            opacity: 0.5;
+        }
+
+        .icon {
+            display: inline-block;
+            max-width: 1.2em;
+            max-height: 1.2em;
+            text-decoration: none;
+            vertical-align: text-bottom;
+            margin-right: 0.5em;
+        }
+
+        img.icon {
+            border-radius: 3px;
+        }
+
+        .user-icon {
+            width: 1.5em;
+            height: 1.5em;
+            border-radius: 100%;
+            margin-right: 0.5rem;
+        }
+
+        .user-icon-inner {
+            font-size: 0.8em;
+        }
+
+        .text-icon {
+            border: 1px solid #000;
+            text-align: center;
+        }
+
+        .page-cover-image {
+            display: block;
+            object-fit: cover;
+            width: 100%;
+            height: 30vh;
+        }
+
+        .page-header-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-header-icon-with-cover {
+            margin-top: -0.72em;
+            margin-left: 0.07em;
+        }
+
+        .page-header-icon img {
+            border-radius: 3px;
+        }
+
+        .link-to-page {
+            margin: 1em 0;
+            padding: 0;
+            border: none;
+            font-weight: 500;
+        }
+
+        p>.user {
+            opacity: 0.5;
+        }
+
+        td>.user,
+        td>time {
+            white-space: nowrap;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.5);
+            margin-right: 0.6em;
+            vertical-align: middle;
+        }
+
+        p {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .image {
+            border: none;
+            margin: 1.5em 0;
+            padding: 0;
+            border-radius: 0;
+            text-align: center;
+        }
+
+        .code,
+        code {
+            background: rgba(135, 131, 120, 0.15);
+            border-radius: 3px;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+            tab-size: 2;
+        }
+
+        code {
+            color: #eb5757;
+        }
+
+        .code {
+            padding: 1.5em 1em;
+        }
+
+        .code-wrap {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .code>code {
+            background: none;
+            padding: 0;
+            font-size: 100%;
+            color: inherit;
+        }
+
+        blockquote {
+            font-size: 1.25em;
+            margin: 1em 0;
+            padding-left: 1em;
+            border-left: 3px solid rgb(55, 53, 47);
+        }
+
+        .bookmark {
+            text-decoration: none;
+            max-height: 8em;
+            padding: 0;
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        .bookmark-title {
+            font-size: 0.85em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 1.75em;
+            white-space: nowrap;
+        }
+
+        .bookmark-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bookmark-info {
+            flex: 4 1 180px;
+            padding: 12px 14px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .bookmark-image {
+            width: 33%;
+            flex: 1 1 180px;
+            display: block;
+            position: relative;
+            object-fit: cover;
+            border-radius: 1px;
+        }
+
+        .bookmark-description {
+            color: rgba(55, 53, 47, 0.6);
+            font-size: 0.75em;
+            overflow: hidden;
+            max-height: 4.5em;
+            word-break: break-word;
+        }
+
+        .bookmark-href {
+            font-size: 0.75em;
+            margin-top: 0.25em;
+        }
+
+        .sans {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+
+        .code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+
+        .serif {
+            font-family: Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif;
+        }
+
+        .mono {
+            font-family: iawriter-mono, Nitti, Menlo, Courier, monospace;
+        }
+
+        .pdf .sans {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR';
+        }
+
+        .pdf .code {
+            font-family: Source Code Pro, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR';
+        }
+
+        .pdf .serif {
+            font-family: PT Serif, Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR';
+        }
+
+        .pdf .mono {
+            font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR';
+        }
+
+        .highlight-default {}
+
+        .highlight-gray {
+            color: rgb(155, 154, 151);
+        }
+
+        .highlight-brown {
+            color: rgb(100, 71, 58);
+        }
+
+        .highlight-orange {
+            color: rgb(217, 115, 13);
+        }
+
+        .highlight-yellow {
+            color: rgb(223, 171, 1);
+        }
+
+        .highlight-teal {
+            color: rgb(15, 123, 108);
+        }
+
+        .highlight-blue {
+            color: rgb(11, 110, 153);
+        }
+
+        .highlight-purple {
+            color: rgb(105, 64, 165);
+        }
+
+        .highlight-pink {
+            color: rgb(173, 26, 114);
+        }
+
+        .highlight-red {
+            color: rgb(224, 62, 62);
+        }
+
+        .highlight-gray_background {
+            background: rgb(235, 236, 237);
+        }
+
+        .highlight-brown_background {
+            background: rgb(233, 229, 227);
+        }
+
+        .highlight-orange_background {
+            background: rgb(250, 235, 221);
+        }
+
+        .highlight-yellow_background {
+            background: rgb(251, 243, 219);
+        }
+
+        .highlight-teal_background {
+            background: rgb(221, 237, 234);
+        }
+
+        .highlight-blue_background {
+            background: rgb(221, 235, 241);
+        }
+
+        .highlight-purple_background {
+            background: rgb(234, 228, 242);
+        }
+
+        .highlight-pink_background {
+            background: rgb(244, 223, 235);
+        }
+
+        .highlight-red_background {
+            background: rgb(251, 228, 228);
+        }
+
+        .block-color-default {
+            color: inherit;
+            fill: inherit;
+        }
+
+        .block-color-gray {
+            color: rgba(55, 53, 47, 0.6);
+            fill: rgba(55, 53, 47, 0.6);
+        }
+
+        .block-color-brown {
+            color: rgb(100, 71, 58);
+            fill: rgb(100, 71, 58);
+        }
+
+        .block-color-orange {
+            color: rgb(217, 115, 13);
+            fill: rgb(217, 115, 13);
+        }
+
+        .block-color-yellow {
+            color: rgb(223, 171, 1);
+            fill: rgb(223, 171, 1);
+        }
+
+        .block-color-teal {
+            color: rgb(15, 123, 108);
+            fill: rgb(15, 123, 108);
+        }
+
+        .block-color-blue {
+            color: rgb(11, 110, 153);
+            fill: rgb(11, 110, 153);
+        }
+
+        .block-color-purple {
+            color: rgb(105, 64, 165);
+            fill: rgb(105, 64, 165);
+        }
+
+        .block-color-pink {
+            color: rgb(173, 26, 114);
+            fill: rgb(173, 26, 114);
+        }
+
+        .block-color-red {
+            color: rgb(224, 62, 62);
+            fill: rgb(224, 62, 62);
+        }
+
+        .block-color-gray_background {
+            background: rgb(235, 236, 237);
+        }
+
+        .block-color-brown_background {
+            background: rgb(233, 229, 227);
+        }
+
+        .block-color-orange_background {
+            background: rgb(250, 235, 221);
+        }
+
+        .block-color-yellow_background {
+            background: rgb(251, 243, 219);
+        }
+
+        .block-color-teal_background {
+            background: rgb(221, 237, 234);
+        }
+
+        .block-color-blue_background {
+            background: rgb(221, 235, 241);
+        }
+
+        .block-color-purple_background {
+            background: rgb(234, 228, 242);
+        }
+
+        .block-color-pink_background {
+            background: rgb(244, 223, 235);
+        }
+
+        .block-color-red_background {
+            background: rgb(251, 228, 228);
+        }
+
+        .select-value-color-default {
+            background-color: rgba(206, 205, 202, 0.5);
+        }
+
+        .select-value-color-gray {
+            background-color: rgba(155, 154, 151, 0.4);
+        }
+
+        .select-value-color-brown {
+            background-color: rgba(140, 46, 0, 0.2);
+        }
+
+        .select-value-color-orange {
+            background-color: rgba(245, 93, 0, 0.2);
+        }
+
+        .select-value-color-yellow {
+            background-color: rgba(233, 168, 0, 0.2);
+        }
+
+        .select-value-color-green {
+            background-color: rgba(0, 135, 107, 0.2);
+        }
+
+        .select-value-color-blue {
+            background-color: rgba(0, 120, 223, 0.2);
+        }
+
+        .select-value-color-purple {
+            background-color: rgba(103, 36, 222, 0.2);
+        }
+
+        .select-value-color-pink {
+            background-color: rgba(221, 0, 129, 0.2);
+        }
+
+        .select-value-color-red {
+            background-color: rgba(255, 0, 26, 0.2);
+        }
+
+        .checkbox {
+            display: inline-flex;
+            vertical-align: text-bottom;
+            width: 16;
+            height: 16;
+            background-size: 16px;
+            margin-left: 2px;
+            margin-right: 5px;
+        }
+
+        .checkbox-on {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+        }
+
+        .checkbox-off {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+        }
+        pre.host {
+            text-align: center;
+            background-color: transparent;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            position: relative;
+        }
+        pre.host:hover::after{
+            content:"点击复制";
+            display: block;
+            position: absolute;
+            right:0;
+            top:0;
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<article id="ef4b317f-972c-4300-b769-2aca319ead50" class="page sans">
+    <header><img class="page-cover-image" src="https://cdn.jsdelivr.net/gh/topjohnwu/Magisk/docs/images/logo.png"
+                 style="object-position:center 50%" />
+        <h1 class="page-title" style="margin-top: 1.5em;">Magisk 自定义更新通道</h1>
+    </header>
+    <div class="page-body">
+        <p id="03f4e977-1607-4afa-8525-cefd1d8f93c7" class="">
+        </p>
+        <h1 id="25171c5a-6243-442b-a86a-c12373b11d1e" class="">Magisk</h1>
+        <p id="c6531b6f-d6cf-4a68-ad55-50f1bdb7da97" class="">Magisk 是一套开放源代码的 Android 自定义工具套组，内置了 Magisk
+            Manager、Root、启动脚本、SElinux 补丁和启动时认证 /dm-verity/ 强制加密移除等功能。</p>
+        <p id="12ae18b3-a914-4bef-b5de-5e4fb0638812" class="">本站提供 Magisk Beta 自定义通道</p>
+        <style>
+            @import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css');
+        </style>
+        <pre id="635f0768-8bfb-44ba-9fdf-dee87397ad10"
+             class="code code-wrap host"><code>{{.host}}</code></pre>
+        <p id="0ae0f6e6-35e9-4e53-add5-7c3277e37f3b" class="">
+        </p>
+        <h1 id="ba8afe8c-ca9d-4a5f-8fa7-e2cdefe12dbd" class="">你也可以自己搭建</h1>
+        <p id="9dda0529-9610-44b8-94c2-efd848e98937" class="">1.下载源文件</p>
+        <style>
+            @import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css');
+        </style>
+        <pre id="c372bcec-3ec7-499e-acf8-b3b7fa29006f" class="code"><code><span class="token function">git</span> clone <span class="token punctuation">...</span>
+<span class="token function">tar</span> xvf <span class="token punctuation">...</span>
+<span class="token builtin class-name">cd</span> <span class="token punctuation">...</span></code></pre>
+        <p id="8b1ab048-57a0-4d29-a883-db63b0446742" class="">2.下载 go mod</p>
+        <style>
+            @import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css');
+        </style>
+        <pre id="f375e9a6-ab41-4704-a3c0-4d9776fee7e1"
+             class="code"><code><span class="token keyword">go</span> mod tidy</code></pre>
+        <p id="e63915f1-220f-4220-8869-88e520d558b4" class="">3.启动</p>
+        <style>
+            @import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css');
+        </style>
+        <pre id="4ebef3ff-d1b2-4f20-8621-2128b4dda970"
+             class="code"><code>./xxx -d 你的域名或者主机地址 -s <span class="token operator">></span>/tmp/magisk_channel.log <span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">&amp;</span></code></pre>
+        <p id="debded2f-52bd-4176-bc21-53b5a545ff20" class="">
+        </p>
+    </div>
+</article>
+<textarea id="text" style="opacity: 0; z-index: -1; position: fixed; top:0;left:0;width:0;height:0;"></textarea>
+<div id="alert" style="display: none;align-items:center;justify-content: center;position:fixed;left:0;top:10px;right:0;width:100px; height:50px;margin:auto;background-color:#f6f6f6;border-radius: 3px;">Copied √</div>
+<script>
+    var host = document.getElementsByClassName("host")[0];
+    host.onclick=function() {
+        var t = document.createElement("textarea")
+        var t = document.getElementById("text")
+        var a = document.getElementById("alert")
+        t.setAttribute("value",this.innerText)
+        t.innerText = this.innerText;
+        t.select();
+        console.log(t);
+        document.execCommand("copy");
+        a.style.display = "flex";
+        setTimeout(function() {
+            a.style.display = "none";
+        },700)
+    }
+</script>
+</body>
+
+</html>
