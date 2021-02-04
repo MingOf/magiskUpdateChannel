@@ -18,9 +18,9 @@ chmod a+x magiskChannel
 ```bash
 ./magiskChannel [-d=域名或者主机IP] [-p=端口] [--listenAddress=127.0.0.1] [--listenPort=监听端口]
 ```
--d: 域名或者主机 IP，决定生成的配置的访问域名 
+-d: 域名或者主机 IP，决定生成的配置的访问域名，默认使用主机的公网 IP 地址 
 
--p: 端口，决定生成的配置的访问域名端口
+-p: 端口，决定生成的配置的访问域名端口，默认 80
 
 如：
 ```bash
@@ -36,11 +36,11 @@ http://example.com:80/
 
 --listenAddress: 启动 http 服务的监听地址，默认 0.0.0.0
 
---listenPort: 启动 http 服务的监听端口，默认和 -p 相同
+--listenPort: 启动 http 服务的监听端口，默认 80
 
-监听端口默认和配置文件访问端口[-p]相同，也可以单独指定 listenPort，以便使用 nginx 进行端口转发
+通常情况下不用特别指定 listenAddress 和 listenPort
 
-指定域名后需要确保域名已经解析到自己的主机
+如果使用 nginx 可以将 listenAddress 改为 127.0.0.1，listenPort 改为其他端口
 
 启动后会定时拉取 magisk.apk 和 magisk.zip 到本地，保证最新版本
 

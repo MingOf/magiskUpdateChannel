@@ -44,7 +44,7 @@ type Magisk struct {
 func main() {
 	domain := flag.String("d", getExternalIP(), "域名或IP")
 	port := flag.String("p", "80", "端口")
-	listenPort := flag.String("listenPort", *port, "监听端口")
+	listenPort := flag.String("listenPort", "80", "监听端口")
 	listenAddress := flag.String("listenAddress", "0.0.0.0", "监听地址")
 	debug := flag.Bool("debug", false, "详细日志")
 	flag.Parse()
@@ -55,7 +55,6 @@ func main() {
 	}
 	fmt.Println(gin.Mode())
 
-	//1. 获取 beta.json 配置
 	fmt.Println("已指定域名:", *domain)
 	fmt.Println("已指定端口:", *port)
 
@@ -63,7 +62,11 @@ func main() {
 	if *port == "80" {
 		realDomain = *domain
 	}
+	fmt.Println(*port)
 	realListen := *listenAddress + ":" + *listenPort
+	fmt.Println("已监听:", realListen)
+
+	//1. 获取 beta.json 配置
 	go cron(getConfig, realDomain)
 
 	//4. 启动服务器
@@ -116,7 +119,9 @@ func main() {
 			"host": "http://" + realDomain + "/beta.json",
 		})
 	})
-	r.Run(realListen)
+	if err := r.Run(realListen); err != nil {
+		fmt.Println(err)
+	}
 }
 
 func getAndSaveMagisk(ctx context.Context, link string, path string) {
