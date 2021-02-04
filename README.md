@@ -10,15 +10,17 @@ Magisk 是一套开放源代码的 Android 自定义工具套组，内置了 Mag
 ```bash
 git clone https://github.com/MingOf/magiskUpdateChannel.git
 cd magiskUpdateChannel
-chmod a+x magiskUpdateChannel
+chmod a+x magiskChannel
 ```
 
 
 2.启动
 ```bash
-./magiskUpdateChannel [-d=域名或者主机IP] [-p=端口]
+./magiskChannel [-d=域名或者主机IP] [-p=端口]
 ```
 域名或者主机 IP 会以及端口会传递给 index.tmpl 模板
+
+启动后会定时拉取 magisk.apk 和 magisk.zip 到本地，保证最新版本
 
 3.访问
 
@@ -27,7 +29,7 @@ chmod a+x magiskUpdateChannel
 http://yourdomain/beta.json
 
 # 网页
-http://yourdomain/index.html
+http://yourdomain/
 
 # magisk.apk
 http://yourdomain/magisk.apk
