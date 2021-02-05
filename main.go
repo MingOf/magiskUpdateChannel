@@ -18,7 +18,7 @@ type Conf struct {
 	App         App         `json:"app"`
 	Stub        Stub        `json:"stub"`
 	Uninstaller Uninstaller `json:"uninstaller"`
-	Magisk      Magisk      `json:"magisk.zip"`
+	Magisk      Magisk      `json:"magisk"`
 }
 type App struct {
 	Version     string `json:"version"`
@@ -104,28 +104,28 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Println("已监听:", realListen)
-	//r.GET("/magisk.zip.apk", func(context *gin.Context) {
+	//r.GET("/magisk.apk", func(context *gin.Context) {
 	//	// 获取要返回的文件数据流
-	//	file, err := os.OpenFile("./magisk.zip.apk", os.O_RDONLY, 400)
+	//	file, err := os.OpenFile("./magisk.apk", os.O_RDONLY, 400)
 	//	if err != nil {
-	//		fmt.Println("打开./magisk.zip.apk失败")
+	//		fmt.Println("打开./magisk.apk失败")
 	//	}
 	//	content, err := ioutil.ReadAll(file)
 	//	context.Writer.WriteHeader(200)
-	//	context.Header("Content-Disposition", "attachment; filename=magisk.zip.apk")
+	//	context.Header("Content-Disposition", "attachment; filename=magisk.apk")
 	//	context.Header("Content-Type", "application/text/plain")
 	//	//c.Header("Accept-Length", fmt.Sprintf("%d", len(content)))
 	//	context.Header("Accept-Length", "200")
 	//	context.Data(200, "application/vnd.android.package-archive", content)
 	//})
-	//r.GET("/magisk.zip.zip", func(context *gin.Context) {
-	//	file, err := os.OpenFile("./magisk.zip.zip", os.O_RDONLY, 400)
+	//r.GET("/magisk.zip", func(context *gin.Context) {
+	//	file, err := os.OpenFile("./magisk.zip", os.O_RDONLY, 400)
 	//	if err != nil {
-	//		fmt.Println("打开./magisk.zip.zip失败")
+	//		fmt.Println("打开./magisk.zip失败")
 	//	}
 	//	content, err := ioutil.ReadAll(file)
 	//	context.Writer.WriteHeader(200)
-	//	context.Header("Content-Disposition", "attachment; filename=magisk.zip.apk")
+	//	context.Header("Content-Disposition", "attachment; filename=magisk.zip")
 	//	context.Header("Content-Type", "application/text/plain")
 	//	context.Header("Accept-Length", "200")
 	//	context.Data(200, "application/application/zip", content)
@@ -133,7 +133,7 @@ func main() {
 	//r.GET("/beta.json", func(context *gin.Context) {
 	//	file, err := os.OpenFile("./beta.json", os.O_RDONLY, 400)
 	//	if err != nil {
-	//		fmt.Println("打开./magisk.zip.zip失败")
+	//		fmt.Println("打开./beta.json失败")
 	//	}
 	//	content, err := ioutil.ReadAll(file)
 	//	var data Conf
@@ -211,7 +211,8 @@ func getConfig(ctx context.Context, host string) {
 			return
 		}
 		fmt.Println("更新本地配置成功")
-		//3. 通过未修改的配置(cfg)中的 link 下载 magisk.zip.apk 和 magisk.zip.zip
+		//3. 通过未修改的配置(cfg)中的 link 下载 magisk.apk 和 magisk.zip
+		fmt.Println(cfg.Magisk.Link)
 		go getAndSaveMagisk(ctx, cfg.App.Link, "./magisk.apk")
 		go getAndSaveMagisk(ctx, cfg.Magisk.Link, "./magisk.zip")
 	}
@@ -237,7 +238,7 @@ func getExternalIP() string {
 
 func cron(fn func(ctx context.Context, host string), host string) {
 	for {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		go fn(ctx, host)
 		time.Sleep(24 * time.Hour)
 		cancel()
