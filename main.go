@@ -88,7 +88,6 @@ func main() {
 
 	//1. 获取 beta.json 配置
 	go cron(getConfig, host)
-
 	//4. 启动服务器
 	r := gin.Default()
 	//下载功能
@@ -148,10 +147,10 @@ func main() {
 	//})
 }
 
-func getAndSaveMagisk(ctx context.Context, link string, path string) {
+func getAndSaveMagisk(ctx context.Context, link string, savePath string) {
 	select {
 	case <-ctx.Done():
-		fmt.Println("download magisk.zip timeout")
+		fmt.Println("download ", savePath, " timeout")
 		return
 	default:
 		resp, err := http.Get(link)
@@ -160,18 +159,18 @@ func getAndSaveMagisk(ctx context.Context, link string, path string) {
 			return
 		}
 		defer resp.Body.Close()
-		out, err := os.Create(path)
+		out, err := os.Create(savePath)
 		if err != nil {
-			fmt.Printf("创建 %s 失败,err:%s\n", path, err)
+			fmt.Printf("创建 %s 失败,err:%s\n", savePath, err)
 			return
 		}
 		defer out.Close()
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
-			fmt.Printf("写入 %s 失败,err:%s\n", path, err)
+			fmt.Printf("写入 %s 失败,err:%s\n", savePath, err)
 			return
 		}
-		fmt.Println("下载", path, "成功")
+		fmt.Println("下载", savePath, "成功")
 	}
 }
 func getConfig(ctx context.Context, host string) {
@@ -182,8 +181,7 @@ func getConfig(ctx context.Context, host string) {
 	default:
 		resp, err := http.Get("https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json")
 		if err != nil {
-			fmt.Println(err)
-			return
+			panic(err)
 		}
 		defer resp.Body.Close()
 
@@ -196,8 +194,8 @@ func getConfig(ctx context.Context, host string) {
 		err = json.Unmarshal(data, &copyCfg)
 
 		//2. 复制配置的副本，修改副本，替换 link 为自己的 link. 并保存到本地
-		copyCfg.App.Link = host + "/magisk.zip.apk"
-		copyCfg.Magisk.Link = host + "/magisk.zip.zip"
+		copyCfg.App.Link = fmt.Sprintf("%s/%s", host, "magisk.apk")
+		copyCfg.Magisk.Link = fmt.Sprintf("%s/%s", host, "magisk.zip")
 
 		fmt.Println("获取远程配置成功")
 
@@ -214,8 +212,8 @@ func getConfig(ctx context.Context, host string) {
 		}
 		fmt.Println("更新本地配置成功")
 		//3. 通过未修改的配置(cfg)中的 link 下载 magisk.zip.apk 和 magisk.zip.zip
-		go getAndSaveMagisk(ctx, cfg.App.Link, "./magisk.zip.apk")
-		go getAndSaveMagisk(ctx, cfg.Magisk.Link, "./magisk.zip.zip")
+		go getAndSaveMagisk(ctx, cfg.App.Link, "./magisk.apk")
+		go getAndSaveMagisk(ctx, cfg.Magisk.Link, "./magisk.zip")
 	}
 }
 
