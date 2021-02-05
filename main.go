@@ -92,8 +92,8 @@ func main() {
 	//4. 启动服务器
 	r := gin.Default()
 	//下载功能
-	r.StaticFile("/magisk.zip.apk", "./magisk.zip.apk")
-	r.StaticFile("/magisk.zip.zip", "./magisk.zip.zip")
+	r.StaticFile("/magisk.apk", "./magisk.apk")
+	r.StaticFile("/magisk.zip", "./magisk.zip")
 	r.StaticFile("/beta.json", "./beta.json")
 	r.LoadHTMLFiles("./index.tmpl")
 	r.GET("/", func(context *gin.Context) {
