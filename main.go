@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -164,11 +165,13 @@ func getAndSaveMagisk(ctx context.Context, link string, savePath string) {
 			fmt.Printf("创建 %s 失败,err:%s\n", savePath, err)
 			return
 		}
-		defer out.Close()
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
 			fmt.Printf("写入 %s 失败,err:%s\n", savePath, err)
 			return
+		}
+		if err = out.Close(); err != nil {
+			log.Printf("关闭%s失败,err:%v", savePath, err)
 		}
 		fmt.Println("下载", savePath, "成功")
 	}
@@ -209,6 +212,9 @@ func getConfig(ctx context.Context, host string) {
 		if err != nil {
 			fmt.Printf("写入本地配置文件失败,err:%s\n", err)
 			return
+		}
+		if err = out.Close(); err != nil {
+			log.Println("关闭beta.json失败", err)
 		}
 		fmt.Println("更新本地配置成功")
 		//3. 通过未修改的配置(cfg)中的 link 下载 magisk.apk 和 magisk.zip
